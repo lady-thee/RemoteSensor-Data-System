@@ -10,8 +10,9 @@ psycopg2-binary = "*"
 pydantic = "*"
 pydantic-settings = "*"
 dj-database-url = "*"
+django-filter = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.11"
+python_version = "3.12"

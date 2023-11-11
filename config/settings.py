@@ -55,6 +55,8 @@ INSTALLED_APPS = [
     "api.apps.ApiConfig",
 
     "rest_framework",
+    "rest_framework.authtoken",
+    "django_filters"
 ]
 
 MIDDLEWARE = [
@@ -68,6 +70,39 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "config.urls"
+
+# REST FRAMEWORK CONFIGURATION
+
+REST_FRAMEWORK = {
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+        "rest_framework.renderers.BrowsableAPIRenderer",
+    ],
+    "DEFAULT_PARSER_CLASSES": [
+        "rest_framework.parsers.JSONParser",
+        "rest_framework.parsers.FormParser",
+        "rest_framework.parsers.MultiPartParser",
+    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.AllowAny",
+        "rest_framework.permissions.IsAuthenticated",
+        "rest_framework.permissions.IsAdminUser",
+    ],
+    "DEFAULT_CONTENT_NEGOTIATION_CLASS": "rest_framework.negotiation.DefaultContentNegotiation",
+    "DEFAULT_FILTER_BACKENDS": "django_filters.rest_framework.DjangoFilterBackend",
+    "EXCEPTION_HANDLER": "rest_framework.views.exception_handler",
+    "SEARCH_PARAM": "filter[search]",
+    "TEST_REQUEST_RENDERER_CLASSES": [
+        "rest_framework.renderers.MultiPartRenderer",
+        "rest_framework.renderers.JSONRenderer",
+    ],
+    "TEST_REQUEST_DEFAULT_FORMAT": "multipart",
+}
+
 
 TEMPLATES = [
     {
@@ -104,7 +139,7 @@ DATABASES = {
 
 # AUTH USER MODEL
 
-# AUTH_USER_MODEL = ""
+AUTH_USER_MODEL = "api.User"
 
 
 # Password validation
