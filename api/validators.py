@@ -20,8 +20,6 @@ class UppercaseLetterValidator(object):
         return _("Your password must contain at least 1 uppercase letter, A-Z.")
 
 
-
-
 class SpecialCharValidator(object):
 
     """The password must contain at least 1 special character @#$%!^&*"""

@@ -47,7 +47,7 @@ class SensorDataAdmin(admin.ModelAdmin):
         "wind_speed",
         "wind_direction",
         "rainfall",
-        "date_added"
+        "date_added",
     ]
     list_display_links = ["sensor"]
 

@@ -19,12 +19,11 @@ class UserManager(BaseUserManager):
         user = self.model(email=self.normalize_email(email), **kwargs)
         user.set_password(password)
         user.save(using=self._db)
-        
-        if user.role == 'Operator' or user.role == 'operator':
-            operator_group, _ = Group.objects.get_or_create(name='Operator')
+
+        if user.role == "Operator" or user.role == "operator":
+            operator_group, _ = Group.objects.get_or_create(name="Operator")
             user.groups.add(operator_group)
-        
-            
+
         return user
 
     def create_superuser(self, email, password, **kwargs):
@@ -43,7 +42,9 @@ class UserManager(BaseUserManager):
 
 class User(AbstractUser):
     USER_ROLES = (("viewer", "Viewer"), ("operator", "Operator"))
-    id = models.UUIDField(default=uuid.uuid4, primary_key=True,unique=True, editable=False)
+    id = models.UUIDField(
+        default=uuid.uuid4, primary_key=True, unique=True, editable=False
+    )
     email = models.EmailField(db_index=True, unique=True, max_length=200, blank=False)
     is_verified = models.BooleanField(default=False)
     company_name = models.CharField(max_length=252, blank=True)
@@ -52,16 +53,13 @@ class User(AbstractUser):
     objects = UserManager()
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = ["username"]
 
     class Meta:
         unique_together = ["id", "email"]
-    
-       
+
     def __str__(self) -> str:
         return self.email
-    
-    
 
 
 # Sensor Information
@@ -88,12 +86,10 @@ class Sensor(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     last_active = models.DateTimeField(auto_now=True)
 
-    
     class Meta:
         verbose_name = "Sensor"
         verbose_name_plural = "Sensors"
-        
-        
+
     def __str__(self) -> str:
         if self.name:
             return self.name
@@ -115,19 +111,31 @@ class Sensor(models.Model):
         return super().save(force_insert, force_update, using, update_fields)
 
 
-
 class SensorData(models.Model):
     """
     Model to store  sensor data
     """
-    sensor = models.ForeignKey("Sensor", verbose_name=_("Sensor"), on_delete=models.CASCADE)
+
+    sensor = models.ForeignKey(
+        "Sensor", verbose_name=_("Sensor"), on_delete=models.CASCADE
+    )
     id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
-    temperature = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    humidity = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    atmospheric_pressure = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
-    wind_speed = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
+    temperature = models.DecimalField(
+        max_digits=5, decimal_places=2, null=True, blank=True
+    )
+    humidity = models.DecimalField(
+        max_digits=5, decimal_places=2, null=True, blank=True
+    )
+    atmospheric_pressure = models.DecimalField(
+        max_digits=7, decimal_places=2, null=True, blank=True
+    )
+    wind_speed = models.DecimalField(
+        max_digits=6, decimal_places=2, null=True, blank=True
+    )
     wind_direction = models.CharField(max_length=20, blank=True)
-    rainfall = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
+    rainfall = models.DecimalField(
+        max_digits=6, decimal_places=2, null=True, blank=True
+    )
     date_added = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -135,4 +143,3 @@ class SensorData(models.Model):
 
     def __str__(self):
         return f"{self.sensor} - Weather Data"
-

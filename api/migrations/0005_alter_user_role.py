@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('api', '0004_sensordata'),
+        ("api", "0004_sensordata"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='user',
-            name='role',
-            field=models.CharField(blank=True, choices=[('viewer', 'Viewer'), ('operator', 'Operator')], max_length=100),
+            model_name="user",
+            name="role",
+            field=models.CharField(
+                blank=True,
+                choices=[("viewer", "Viewer"), ("operator", "Operator")],
+                max_length=100,
+            ),
         ),
     ]

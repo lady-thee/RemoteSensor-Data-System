@@ -4,80 +4,89 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('api', '0006_alter_user_id'),
+        ("api", "0006_alter_user_id"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='sensor',
-            options={'verbose_name': 'Sensor', 'verbose_name_plural': 'Sensors'},
+            name="sensor",
+            options={"verbose_name": "Sensor", "verbose_name_plural": "Sensors"},
         ),
         migrations.AlterModelOptions(
-            name='sensordata',
-            options={'verbose_name_plural': 'Sensor Data'},
+            name="sensordata",
+            options={"verbose_name_plural": "Sensor Data"},
         ),
         migrations.RemoveField(
-            model_name='sensor',
-            name='auth_credentials',
+            model_name="sensor",
+            name="auth_credentials",
         ),
         migrations.RemoveField(
-            model_name='sensor',
-            name='configuration',
+            model_name="sensor",
+            name="configuration",
         ),
         migrations.RemoveField(
-            model_name='sensordata',
-            name='data',
+            model_name="sensordata",
+            name="data",
         ),
         migrations.RemoveField(
-            model_name='sensordata',
-            name='data_type',
+            model_name="sensordata",
+            name="data_type",
         ),
         migrations.RemoveField(
-            model_name='sensordata',
-            name='latitude',
+            model_name="sensordata",
+            name="latitude",
         ),
         migrations.RemoveField(
-            model_name='sensordata',
-            name='longitude',
+            model_name="sensordata",
+            name="longitude",
         ),
         migrations.RemoveField(
-            model_name='sensordata',
-            name='metadata',
+            model_name="sensordata",
+            name="metadata",
         ),
         migrations.RemoveField(
-            model_name='sensordata',
-            name='unit_of_measurement',
+            model_name="sensordata",
+            name="unit_of_measurement",
         ),
         migrations.AddField(
-            model_name='sensordata',
-            name='atmospheric_pressure',
-            field=models.DecimalField(blank=True, decimal_places=2, max_digits=7, null=True),
+            model_name="sensordata",
+            name="atmospheric_pressure",
+            field=models.DecimalField(
+                blank=True, decimal_places=2, max_digits=7, null=True
+            ),
         ),
         migrations.AddField(
-            model_name='sensordata',
-            name='humidity',
-            field=models.DecimalField(blank=True, decimal_places=2, max_digits=5, null=True),
+            model_name="sensordata",
+            name="humidity",
+            field=models.DecimalField(
+                blank=True, decimal_places=2, max_digits=5, null=True
+            ),
         ),
         migrations.AddField(
-            model_name='sensordata',
-            name='rainfall',
-            field=models.DecimalField(blank=True, decimal_places=2, max_digits=6, null=True),
+            model_name="sensordata",
+            name="rainfall",
+            field=models.DecimalField(
+                blank=True, decimal_places=2, max_digits=6, null=True
+            ),
         ),
         migrations.AddField(
-            model_name='sensordata',
-            name='temperature',
-            field=models.DecimalField(blank=True, decimal_places=2, max_digits=5, null=True),
+            model_name="sensordata",
+            name="temperature",
+            field=models.DecimalField(
+                blank=True, decimal_places=2, max_digits=5, null=True
+            ),
         ),
         migrations.AddField(
-            model_name='sensordata',
-            name='wind_direction',
+            model_name="sensordata",
+            name="wind_direction",
             field=models.CharField(blank=True, max_length=20),
         ),
         migrations.AddField(
-            model_name='sensordata',
-            name='wind_speed',
-            field=models.DecimalField(blank=True, decimal_places=2, max_digits=6, null=True),
+            model_name="sensordata",
+            name="wind_speed",
+            field=models.DecimalField(
+                blank=True, decimal_places=2, max_digits=6, null=True
+            ),
         ),
     ]
