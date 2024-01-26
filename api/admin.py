@@ -58,7 +58,7 @@ class SensorDataAdmin(admin.ModelAdmin):
         "city_id",
         "city_name",
         "http_response_code",
-        "date_added"
+        "date_added",
     ]
     list_display_links = ["sensor"]
 
