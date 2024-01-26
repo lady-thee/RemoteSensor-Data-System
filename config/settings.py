@@ -21,11 +21,13 @@ from pydantic_settings import BaseSettings
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
 class GeneralSettings(BaseSettings):
-    DEBUG: bool=False
+    DEBUG: bool = False
     SECRET_KEY: str
     # ALLOWED_HOSTS: List[]
-    DATABASE_URL : PostgresDsn
+    DATABASE_URL: PostgresDsn
+
 
 general_settings = GeneralSettings()
 
@@ -39,22 +41,27 @@ SECRET_KEY = general_settings.SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = general_settings.DEBUG
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
+    "channels",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     "api.apps.ApiConfig",
-
     "rest_framework",
+    "rest_framework.authtoken",
+    "django_filters",
+    "drf_yasg",
+    "corsheaders",
+    "channels_redis",
 ]
 
 MIDDLEWARE = [
@@ -65,9 +72,74 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
+
+# CHANNELS CONFIGURATION
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("redis", 6379)],
+        },
+    },
+}
+
+
+# Corsheaders Configuration
+CORS_ALLOWED_ORIGINS = [
+    'http://127.0.0.1:5500',
+    'http://localhost:8000',
+    'http://*'
+]
+
+# Optional: Set CORS_ALLOW_ALL_ORIGINS to True to allow all origins
+# (Be cautious and use it only for development/testing)
+CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://127.0.0.1:5500',
+]
+
+
+
+# REST FRAMEWORK CONFIGURATION
+
+REST_FRAMEWORK = {
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+        "rest_framework.renderers.BrowsableAPIRenderer",
+    ],
+    "DEFAULT_PARSER_CLASSES": [
+        "rest_framework.parsers.JSONParser",
+        "rest_framework.parsers.FormParser",
+        "rest_framework.parsers.MultiPartParser",
+    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.AllowAny",
+        "rest_framework.permissions.IsAuthenticated",
+        "rest_framework.permissions.IsAdminUser",
+    ],
+    "DEFAULT_CONTENT_NEGOTIATION_CLASS": "rest_framework.negotiation.DefaultContentNegotiation",
+    "DEFAULT_FILTER_BACKENDS": "django_filters.rest_framework.DjangoFilterBackend",
+    "EXCEPTION_HANDLER": "rest_framework.views.exception_handler",
+    "SEARCH_PARAM": "filter[search]",
+    "TEST_REQUEST_RENDERER_CLASSES": [
+        "rest_framework.renderers.MultiPartRenderer",
+        "rest_framework.renderers.JSONRenderer",
+    ],
+    "TEST_REQUEST_DEFAULT_FORMAT": "multipart",
+}
+
 
 TEMPLATES = [
     {
@@ -87,6 +159,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
+ASGI_APPLICATION = "config.asgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -104,18 +177,54 @@ DATABASES = {
 
 # AUTH USER MODEL
 
-# AUTH_USER_MODEL = ""
+AUTH_USER_MODEL = "api.User"
 
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
+# AUTH_PASSWORD_VALIDATORS = [
+#     {
+#         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+#     },
+#     {
+#         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+#     },
+#     {
+#         "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+#     },
+#     {
+#         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+#     },
+# ]
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "OPTIONS": {
+            "max_similarity": 0.7,
+            "user_attributes": ("username", "first_name", "last_name", "email"),
+        },
+    },
+    # {
+    #     "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+    #     "OPTIONS": {
+    #         "min_length": 8,
+    #     },
+    # },
+    {
+        "NAME": "api.validators.CustomMinimumLengthValidator",
+        "OPTIONS": {
+            "min_length": 8,
+        },
     },
     {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "NAME": "api.validators.UppercaseLetterValidator",
+    },
+    {
+        "NAME": "api.validators.CustomNumericValidator",
+    },
+    {
+        "NAME": "api.validators.SpecialCharValidator",
     },
     {
         "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
