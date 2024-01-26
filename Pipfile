@@ -11,6 +11,13 @@ pydantic = "*"
 pydantic-settings = "*"
 dj-database-url = "*"
 django-filter = "*"
+drf-yasg = "*"
+channels-redis = "*"
+django-cors-headers = "*"
+aioredis = "*"
+channels = {extras = ["daphne"], version = "*"}
+requests = "*"
+factory-boy = {extras = ["django"], version = "*"}
 
 [dev-packages]
 

@@ -1,5 +1,8 @@
 version: "3.9"
 
+networks:
+  my_network:
+
 services:
   db:
     image: postgres:15
@@ -8,7 +11,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=2030
-      - POSTGRES_DB=remote_sensor_db
+      - POSTGRES_DB=remote_sensor
     ports:
       - "5432:5432"
     healthcheck:
@@ -16,6 +19,8 @@ services:
       interval: 5s
       timeout: 20s
       retries: 5
+    networks:
+      - my_network
 
   pgadmin:
       image: dpage/pgadmin4
@@ -24,6 +29,13 @@ services:
         - PGADMIN_DEFAULT_PASSWORD=admin
       ports:  
         - "5050:80"
+      networks:
+        - my_network
+
+  redis:
+      image: "redis:latest"
+      networks:
+        - my_network
 
   app:
     build: .
@@ -37,6 +49,10 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - my_network
 
 volumes:
   postgres-data:
+
+
