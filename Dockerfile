@@ -14,8 +14,7 @@ RUN apt-get -y install build-essential
 RUN apt-get -y install libpq-dev gcc
 
 RUN pip install -U pipenv
-
-COPY Pipfile Pipfile.lock ./
 RUN pipenv install --dev --system --deploy --ignore-pipfile
+COPY Pipfile Pipfile.lock ./
 
 COPY . . 
