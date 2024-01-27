@@ -1,0 +1,1 @@
+daphne -w 4 config.asgi:application

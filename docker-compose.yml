@@ -39,6 +39,8 @@ services:
 
   app:
     build: .
+    # buildCommand: docker-compose build
+    # startCommand: docker-compose up 
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/usr/src/app

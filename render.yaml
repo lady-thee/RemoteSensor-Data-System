@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: sensorfusionbackend
+    env: web
+    runtime: python
+    buildCommand: ""
+    startCommand: "daphne config.wsgi:application"
+    envVars:
+      - key: SECRET_KEY
+        generateValue: False
+      - key: WEB_CONCURRENCY
+        value: 4
