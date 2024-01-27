@@ -18,6 +18,7 @@ aioredis = "*"
 channels = {extras = ["daphne"], version = "*"}
 requests = "*"
 factory-boy = {extras = ["django"], version = "*"}
+gunicorn = "*"
 
 [dev-packages]
 
