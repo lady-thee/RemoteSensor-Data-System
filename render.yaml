@@ -1,9 +1,4 @@
 services:
-  database: 
-    - name: remote_sensor_db
-      databaseName: 
-      user: postgres
-
   app:
     - type: web
       name: sensorfusionbackend
