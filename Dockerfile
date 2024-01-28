@@ -19,3 +19,6 @@ COPY Pipfile Pipfile.lock ./
 RUN pipenv install --dev --system --deploy --ignore-pipfile
 
 COPY . . 
+
+# Run Daphne for ASGI connections
+CMD ["daphne", "config.asgi:application", "--bind", "0.0.0.0", "--port", "8000"] &
