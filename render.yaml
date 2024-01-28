@@ -1,10 +1,15 @@
+databases:
+  - name: remote_sensor_db
+    databaseName: remote_sensor_db
+    user: remote_sensor_db
+
 services:
   app:
     - type: web
       name: sensorfusionbackend
       env: web
       runtime: python
-      # buildCommand: "./build.sh"
+      buildCommand: ""
       startCommand: "daphne config.asgi:application"
       envVars:
         - key: DATABASE_URL
