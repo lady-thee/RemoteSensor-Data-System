@@ -20,6 +20,6 @@ services:
           generateValue: False
         - key: WEB_CONCURRENCY
           value: 4
-
-
+        - ports:
+           - 8000 
  
