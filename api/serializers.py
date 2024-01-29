@@ -23,7 +23,7 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
     def validate_email(self, email):
-        pattern = "[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"
+        pattern = f"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+"
 
         if re.match(pattern, email):
             if User.objects.filter(email=email).exists():

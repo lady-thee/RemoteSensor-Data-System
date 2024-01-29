@@ -39,7 +39,7 @@ services:
 
   app:
     build: .
-    command: daphne config.asgi:application -u /tmp/daphne.sock
+    command: daphne config.asgi:application
     volumes:
       - .:/usr/src/app
     ports:
