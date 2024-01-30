@@ -1,4 +1,3 @@
-
 import os
 from pathlib import Path
 from typing import List
@@ -82,7 +81,13 @@ CHANNEL_LAYERS = {
 
 
 # Corsheaders Configuration
-CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:5500", "http://localhost:8000", "https://sensorfusionweather.onrender.com"]
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:5500",
+    "http://localhost:8000",
+    "https://sensorfusionweather.onrender.com",
+    "https://sensorfusionbackend.onrender.com",
+    
+]
 
 # Optional: Set CORS_ALLOW_ALL_ORIGINS to True to allow all origins
 # (Be cautious and use it only for development/testing)
