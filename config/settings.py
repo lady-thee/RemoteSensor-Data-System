@@ -101,12 +101,12 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOW_CREDENTIALS = True
 
-CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:5500", "https://*"]
+CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:5500", "https://sensorfusionbackend.onrender.com"]
 
 # SECURE HOST SETTINGS For Production/Deployment
 SECURE_HSTS_SECONDS = 31536000
 
-# SECURE_SSL_REDIRECT = False 
+# SECURE_SSL_REDIRECT = False
 
 SESSION_COOKIE_SECURE = True
 
@@ -259,6 +259,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = "static/"
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
