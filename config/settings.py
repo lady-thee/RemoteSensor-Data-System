@@ -86,7 +86,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("redis", 6379)],
+            "hosts": [("redis://red-cms4b2md3nmc73eotdng:6379")],
         },
     },
 }
@@ -101,7 +101,10 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOW_CREDENTIALS = True
 
-CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:5500", "https://sensorfusionbackend.onrender.com"]
+CSRF_TRUSTED_ORIGINS = [
+    "http://127.0.0.1:5500",
+    "https://sensorfusionbackend.onrender.com",
+]
 
 # SECURE HOST SETTINGS For Production/Deployment
 SECURE_HSTS_SECONDS = 31536000
