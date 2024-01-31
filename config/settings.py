@@ -82,23 +82,21 @@ CHANNEL_LAYERS = {
 
 # Corsheaders Configuration
 CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:5500",
-    "http://localhost:8000",
-    "https://sensorfusionweather.onrender.com",
     "https://sensorfusionbackend.onrender.com",
-    
+    "https://sensorfusionweather.onrender.com",
+    "http://127.0.0.1:5500",
+    "http://localhost:8000"
 ]
 
-# Optional: Set CORS_ALLOW_ALL_ORIGINS to True to allow all origins
-# (Be cautious and use it only for development/testing)
-CORS_ALLOW_ALL_ORIGINS = True
+
+# CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
-    "http://127.0.0.1:5500",
-    "https://sensorfusionbackend.onrender.com",
     "https://sensorfusionweather.onrender.com",
+    "https://sensorfusionbackend.onrender.com",
+    "http://127.0.0.1:5500",
 ]
 
 # SECURE HOST SETTINGS For Production/Deployment
