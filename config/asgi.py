@@ -8,7 +8,7 @@ django_asgi_app = get_asgi_application()
 
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
-from channels.security.websocket import AllowedHostsOriginValidator
+from channels.security.websocket import AllowedHostsOriginValidator, OriginValidator
 from django.urls import path
 
 from api.consumers import SensorConsumer
@@ -16,7 +16,7 @@ from api.consumers import SensorConsumer
 application = ProtocolTypeRouter(
     {
         "http": django_asgi_app,
-        "websocket": AllowedHostsOriginValidator(
+        "websocket": OriginValidator(
             AuthMiddlewareStack(
                 URLRouter(
                     [
@@ -25,6 +25,10 @@ application = ProtocolTypeRouter(
                     ]
                 )
             ),
+            [
+                'https://sensorfusionweather.onrender.com',
+                '127.0.0.1:5500'
+            ]
         ),
     }
 )
