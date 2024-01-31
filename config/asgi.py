@@ -19,9 +19,9 @@ application = ProtocolTypeRouter(
         "websocket": AllowedHostsOriginValidator(
             AuthMiddlewareStack(
                 URLRouter(
-                    [   
-                        path('ws/', SensorConsumer.as_asgi()),
-                        path("ws/data/", SensorConsumer.as_asgi()),
+                    [
+                        path("wss/", SensorConsumer.as_asgi()),
+                        path("wss/data/", SensorConsumer.as_asgi()),
                     ]
                 )
             ),
