@@ -1,3 +1,0 @@
-python3.12
-
-daphne -w 4 config.asgi:application
