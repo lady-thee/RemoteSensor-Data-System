@@ -15,9 +15,6 @@ class UserCreateInput(Schema):
     country: Optional[str] = None
     residence: Optional[str] = None
 
-    # model_config = {
-    #     'from_attributes': True
-    # }
 
 
 class UserResponseOutput(ModelSchema):
