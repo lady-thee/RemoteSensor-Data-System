@@ -32,6 +32,7 @@ class StatusCode(int, Enum):
 
 class ErrorCode(str, Enum):
     SUCCESS = "SUCCESSFUL"
+    BAD_REQUEST = "BAD_REQUEST"
     INVALID_INPUT = "INVALID_INPUT"
     NOT_FOUND = "NOT_FOUND"
     UNAUTHORIZED = "UNAUTHORIZED"
@@ -42,6 +43,7 @@ class ErrorCode(str, Enum):
 
 ERROR_MESSAGES = {
     ErrorCode.SUCCESS: "Operation completed successfully.",
+    ErrorCode.BAD_REQUEST: "There is a problem with request.",
     ErrorCode.INVALID_INPUT: "The input provided is invalid.",
     ErrorCode.NOT_FOUND: "The requested resource was not found.",
     ErrorCode.UNAUTHORIZED: "You are not authorized to perform this action.",
@@ -70,7 +72,7 @@ class SuccessResponseSchema(BaseResponseSchema[DataT], Generic[DataT]):
     """Standard success response wrapper (for views)."""
     status: str = ErrorCode.SUCCESS.value
     message: str = ERROR_MESSAGES[ErrorCode.SUCCESS]
-    data: DataT
+    data: Optional[DataT] = None
 
 
 class MessageResponseSchema(SuccessResponseSchema[None]):
@@ -103,7 +105,11 @@ class APIException(HttpError):
         self.message = message or ERROR_MESSAGES.get(error_code, "Unknown API Error.")
         super().__init__(self.status_code, self.message)
 
+class BadRequestError(APIException):
+    def __init__(self, message: Optional[str] = None):
+        super().__init__(StatusCode.BAD_REQUEST, ErrorCode.BAD_REQUEST, message)
 
+        
 class InvalidInputError(APIException):
     def __init__(self, message: Optional[str] = None):
         super().__init__(StatusCode.BAD_REQUEST, ErrorCode.INVALID_INPUT, message)

@@ -4,7 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "*"
 psycopg2-binary = "*"
 pydantic = "*"
 pydantic-settings = "*"
@@ -13,6 +12,7 @@ httpx = "*"
 pyjwt = "*"
 django-ninja = "*"
 python-dotenv = "*"
+django = {extras = ["bcrypt"], version = "*"}
 
 [dev-packages]
 

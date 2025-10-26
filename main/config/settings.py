@@ -31,6 +31,10 @@ DEBUG = general_settings.DEBUG
 ALLOWED_HOSTS = general_settings.ALLOWED_HOSTS.split(',')
 ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS if host.strip()]
 
+# JWT Settings
+ACCESS_TOKEN_LIFETIME_DAYS = 1
+REFRESH_TOKEN_LIFETIME_DAYS = 7
+ALGORITHM = "HS256"
 
 # Application definition
 
@@ -41,7 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users'
+    'users',
+    'auth',
 ]
 
 MIDDLEWARE = [
@@ -74,7 +79,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
-AUTH_USER_MODEL = "users.User"
+AUTH_USER_MODEL = "users.Account"
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
@@ -93,6 +98,7 @@ DATABASES = {
         },
     }
 }
+
 
 
 # Password validation
