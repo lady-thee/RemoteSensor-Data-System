@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+psycopg2-binary = "*"
+pydantic = "*"
+pydantic-settings = "*"
+dj-database-url = "*"
+httpx = "*"
+pyjwt = "*"
+django-ninja = "*"
+python-dotenv = "*"
+django = {extras = ["bcrypt"], version = "*"}
+gunicorn = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.12"

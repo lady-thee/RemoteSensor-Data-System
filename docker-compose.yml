@@ -1,0 +1,131 @@
+version: "3.9"
+
+services:
+  influx_db:
+    image: influxdb:2.7 
+    restart: always 
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: ${INFLUXDB_USER}
+      DOCKER_INFLUXDB_INIT_PASSWORD: ${INFLUXDB_PASSWORD}
+      DOCKER_INFLUXDB_INIT_ORG: ${INFLUXDB_ORG}
+      DOCKER_INFLUXDB_INIT_BUCKET: ${INFLUXDB_BUCKET}
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${INFLUXDB_TOKEN}
+    ports:
+      - "8086:8086"
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8086/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+  
+  postgresql_db:
+    image: postgres:17
+    restart: always 
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_DB: ${PG_DB}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${PG_USER} -d ${PG_DB}" ]
+      interval: 5s
+      timeout: 5s 
+      retries: 5
+      start_period: 30s 
+    networks:
+      - app_network
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    ports:
+      - "5050:80"
+    depends_on: 
+      postgresql_db:
+        condition: service_healthy
+    networks:
+      - app_network
+  
+  # Mosquitto MQTT Broker Service (Assuming you need one)
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    container_name: mosquitto
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+      - "8883:8883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+    networks:
+      - app_network
+
+
+  main_app_service:
+    build:
+      context: ./main
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000" 
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://${PG_USER}:${PG_PASSWORD}@postgresql_db:5432/${PG_DB}
+      # REDIS_URL: redis://redis:6379/0  
+      DJANGO_SETTINGS_MODULE: config.settings
+    depends_on:
+      postgresql_db:
+        condition: service_healthy
+      # redis:
+      #   condition: service_started
+    networks:
+      - app_network
+
+  mqtt_service:
+    build:
+      context: ./mqtt_service
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    env_file:
+      - .env 
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+    environment:
+      DATABASE_URL: 'http://influx_db:8086' 
+      INFLUX_TOKEN: ${INFLUXDB_TOKEN}
+      INFLUX_ORG: ${INFLUXDB_ORG}
+      INFLUX_BUCKET: ${INFLUXDB_BUCKET}
+      MAIN_APP_API_URL: ${MAIN_APP_API_URL}
+      MQTT_BROKER: 'mosquitto'
+      MQTT_PORT: '1883'
+    depends_on:
+        - mosquitto
+        - influx_db
+    restart: unless-stopped
+    networks:
+      - app_network
+
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  postgres_data: 
+  influxdb_data:
+
+  
+    
