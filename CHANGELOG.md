@@ -13,6 +13,7 @@
 - Created two new services for deleting sensors and deactivating sensor
 - Created a new service to verify sensor status in the sensor services.py and views.py
 - Added a new fucntion to the auth.py of the MQTT service to call the verify sensor status sensor on the main app url. 
+- Implemented a simple in-memory cache, to test cache set up. Would migrate to redis in due time.
 
 
 ## [2026-1-18]
