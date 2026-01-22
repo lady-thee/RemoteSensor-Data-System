@@ -10,7 +10,6 @@ A service to regenerate MQTT key if previous key is forgotten or erased.
 import uuid
 import json
 import hashlib
-import requests
 import httpx
 import logging
 import secrets
@@ -224,6 +223,31 @@ def update_sensor_service(id: str, data: SensorUpdateSchema) -> SensorResponseSc
         raise InternalServerError(message=f"Unexpected error fetching user (Error: {e})")
 
 
+def verify_sensor_status_service(sensor_id: str | None = None, mqtt_username: str | None = None) -> bool: 
+    """
+    Verify if sensor is active using sensor ID or MQTT username
+    """
+    try:
+        if sensor_id:
+            sensor = Sensor.objects.get(id=sensor_id)
+        elif mqtt_username:
+            credentials = SensorCredentials.objects.get(mqtt_username=mqtt_username)
+            sensor = credentials.sensor
+        else:
+            logger.warning("No sensor_id or mqtt_username provided for status verification")
+            return False
+
+        is_active = sensor.status == Sensor.SensorStatus.ACTIVE
+        logger.info(f"Sensor status verification for {sensor.id}: {is_active}")
+        return is_active
+    except (Sensor.DoesNotExist, SensorCredentials.DoesNotExist):
+        logger.warning(f"Sensor not found for id={sensor_id} or username={mqtt_username}")
+        return False
+    except Exception as e:
+        logger.exception(f"Unexpected error during sensor status verification: {e}")
+        return False
+
+
 
 def authenticate_sensor_service(mqtt_username: str, mqtt_key: str) -> bool:
     """
@@ -243,13 +267,32 @@ def authenticate_sensor_service(mqtt_username: str, mqtt_key: str) -> bool:
         return False
 
 
+def deactivate_sensor_service(id: str) -> SuccessResponseSchema:
+    """
+    Deactivate sensor by ID
+    """
+    try:
+        sensor = Sensor.objects.get(id=id)
+        sensor.status = Sensor.Status.INACTIVE
+        sensor.save()
+        return SuccessResponseSchema(message=f"Sensor with id '{id}' deactivated successfully.")
+    except Sensor.DoesNotExist:
+        logger.warning(f"Sensor with id={id} not found")
+        raise NotFoundError(message=f"Sensor with id '{id}' not found.")
+    except Exception as e:
+        logger.exception(f"Unexpected error deactivating sensor id={id}: {e}")
+        raise InternalServerError(message=f"Unexpected error deactivating sensor (Error: {e})")
+
+
 def delete_sensor_service(id: str) -> SuccessResponseSchema:
     """
     Delete sensor by ID
     """
     try:
         sensor = Sensor.objects.get(id=id)
-        sensor.delete()
+        # sensor.delete()
+        sensor.status = Sensor.Status.DELETED
+        sensor.save()
         return SuccessResponseSchema(message=f"Sensor with id '{id}' deleted successfully.")
     except Sensor.DoesNotExist:
         logger.warning(f"Sensor with id={id} not found")

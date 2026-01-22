@@ -80,6 +80,7 @@ async def verify_mqtt_credentials(mqtt_username: str, mqtt_key: str):
     via the main database service.
     """
     try:
+        # Check if credentials exist in Mosquitto passwd file
         result = subprocess.run(
             [
                 ['grep', '-c', f'^{mqtt_username}:{mqtt_key}$', '/mosquitto/config/passwd']
@@ -106,24 +107,25 @@ async def verify_mqtt_credentials(mqtt_username: str, mqtt_key: str):
             logger.info(f"MQTT credentials verification failed in main DB for {mqtt_username}")
 
             # Clean up - remove from Mosquitto as well
-            subprocess.run(
-                [
-                    'mosquitto_passwd',
-                    '-D',
-                    '/mosquitto/config/passwd',
-                    mqtt_username
-                ],
-                capture_output=True,
-                text=True,
-                check=True
-            )
+            # subprocess.run(
+            #     [
+            #         'mosquitto_passwd',
+            #         '-D',
+            #         '/mosquitto/config/passwd',
+            #         mqtt_username
+            #     ],
+            #     capture_output=True,
+            #     text=True,
+            #     check=True
+            # )
+            await delete_credentials(DeleteCredentialsRequest(mqtt_username=mqtt_username))
             return {
                 "status": "error", 
                 "message": "Sensor is not active or does not exist at all in main DB.",
                 "is_valid": False
             }
-        logger.info(f"MQTT credentials verified successfully for {mqtt_username}")
         
+        logger.info(f"MQTT credentials verified successfully for {mqtt_username}")
         return {
             "status": "success", 
             "message": "Credentials are valid and sensor is active",

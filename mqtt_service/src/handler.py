@@ -9,6 +9,8 @@ from loguru import logger
 import aiomqtt
 from dotenv import load_dotenv
 
+from src.auth import verify_sensor_status
+
 
 load_dotenv()
 
@@ -78,8 +80,15 @@ async def mqtt_listener():
                 if not operator_id or not sensor_id:
                     logger.error(f"MQTT_ERROR: Invalid topic format: {topic}")
                     continue
+                
+                # Verify messsage/payload before processing
+                is_sensor_active = await verify_sensor_status(sensor_id=sensor_id, mqtt_username=None)
 
-                # Parse payload 
+                if not is_sensor_active:
+                    logger.error(f"MQTT_ERROR: Inactive or unknown sensor {sensor_id}. Rejecting message.")
+                    continue
+
+                # Parse payload if sensor is active
                 try: 
                     payload = json.loads(payload_str)
                 except json.JSONDecodeError:

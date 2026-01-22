@@ -1,5 +1,20 @@
 # Change Log for InFlow Progress 
 
+
+## [26-1-23]
+### Updates
+- Updated sensor status in the models.py, to include DELETE type.
+- Updated the MQTT listener to verify sensor status upon every message before processing. 
+- Updated the verify sensor route in MQTT routes. 
+- Added an index atrribute to the Sensor.Status field. 
+
+### Features
+- Created signals for the Create sensor endpoint.
+- Created two new services for deleting sensors and deactivating sensor
+- Created a new service to verify sensor status in the sensor services.py and views.py
+- Added a new fucntion to the auth.py of the MQTT service to call the verify sensor status sensor on the main app url. 
+
+
 ## [2026-1-18]
 
 ### Features

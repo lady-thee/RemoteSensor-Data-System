@@ -14,6 +14,7 @@ django-ninja = "*"
 python-dotenv = "*"
 django = {extras = ["bcrypt"], version = "*"}
 gunicorn = "*"
+loguru = "*"
 
 [dev-packages]
 

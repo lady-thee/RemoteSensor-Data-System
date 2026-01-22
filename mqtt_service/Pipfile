@@ -10,6 +10,8 @@ pydantic-settings = "*"
 loguru = "*"
 aiomqtt = "*"
 uvicorn = "*"
+async-lru = "*"
+async-lru-cache = "*"
 
 [dev-packages]
 

@@ -7,7 +7,10 @@ from sensors.services import (
     get_sensor_by_id_service,
     get_user_sensors_service,
     update_sensor_service,
-    authenticate_sensor_service
+    authenticate_sensor_service,
+    deactivate_sensor_service,
+    delete_sensor_service,
+    verify_sensor_status_service
 )
 from sensors.schema import (
     SensorInputSchema, 
@@ -66,7 +69,7 @@ def get_sensor_for_current_users(request):
 
 
 @router.get(
-    "/users/{sensor_id}",
+    "/user/{sensor_id}",
     response={200: SuccessResponseSchema[SensorResponseSchema]},
     auth=authenticate_user,
     summary="Get sensors for current user"
@@ -83,7 +86,6 @@ def get_sensor_per_id(request, sensor_id: str):
         message="Records retrieved successsfully",
         data=sensor_data
     )
-
 
 
 @router.patch(
@@ -108,6 +110,20 @@ def update_sensor(request, sensor_id: str, payload: SensorUpdateSchema):
     )
 
 
+@router.get(
+    "/verify_status",
+    response={200: bool},
+    summary="Verify if sensor is active"
+)
+def verify_sensor_status(request, sensor_id: str = None, mqtt_username: str = None):
+    """
+    Verify if sensor is active
+    """
+    is_active = verify_sensor_status_service(sensor_id=sensor_id, mqtt_username=mqtt_username)
+    
+    return is_active
+
+
 @router.post(
     "/authenticate",
     response={200: SuccessResponseSchema[AuthenticateSensorResponseSchema]},
@@ -129,12 +145,35 @@ def authenticate_sensor(request, payload: AuthenticateSensorSchema):
     )
 
 
-# To be implemented in future releases
-@router.delete(
+@router.patch(
+    "/deactivate/{sensor_id}",
+    response={200: SuccessResponseSchema[None]},
+    auth=authenticate_user,
+    summary="Deactivate sensor"
+)
+def deactivate_sensor(request, sensor_id: str):
+    """
+    Deactivate sensor - To be implemented in future releases
+    """
+    # current_user = request.auth
+
+    deactivate_response = deactivate_sensor_service(str(sensor_id))
+    
+    return deactivate_response
+
+
+@router.patch(
     "/delete/{sensor_id}",
     response={200: SuccessResponseSchema[None]},
     auth=authenticate_user,
     summary="Delete sensor"
 )
 def delete_sensor(request, sensor_id: str):
-    pass
+    """
+    Delete sensor - soft delete by changing status to DELETED
+    """
+    # current_user = request.auth
+
+    delete_response = delete_sensor_service(str(sensor_id))
+    
+    return delete_response
