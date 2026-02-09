@@ -1,7 +1,13 @@
 # Change Log for InFlow Progress 
 
 
-## [26-1-23]
+## [2026-2-9]
+### Features
+- Created a script to simulate sensor behavior to test MQTT conenction with mosquito
+- Created dockerfile for script to enable it run in docker environment.
+
+
+## [2026-1-23]
 ### Updates
 - Updated sensor status in the models.py, to include DELETE type.
 - Updated the MQTT listener to verify sensor status upon every message before processing. 

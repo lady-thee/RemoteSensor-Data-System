@@ -29,6 +29,8 @@ services:
     restart: always 
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: ${PG_USER}
       POSTGRES_PASSWORD: ${PG_PASSWORD}
@@ -115,6 +117,20 @@ services:
         - mosquitto
         - influx_db
     restart: unless-stopped
+    networks:
+      - app_network
+  
+  sensor_simulator:
+    build:
+      context: ./workshop
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      MQTT_BROKER: 'mosquitto'
+      MQTT_PORT: '1883'
+    depends_on:
+      - mosquitto
     networks:
       - app_network
 

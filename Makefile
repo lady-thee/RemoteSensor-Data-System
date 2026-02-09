@@ -19,6 +19,9 @@ up:
 down:
 	docker compose down 
 
+down-all:
+	docker compose down --volumes --remove-orphans
+
 build:
 	docker compose up -d --build 
 
