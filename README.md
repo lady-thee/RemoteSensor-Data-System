@@ -1,3 +1,6 @@
+# OLD README.MD SUBJECT TO CHANGE SOON
+
+
 ## Introduction
 
 The SensorFusion API represents a sophisticated backend system designed to support weather and temperature remote sensors. Its primary function is to collect and manage data pertaining to weather conditions in specific areas, offering both real-time analysis and archiving capabilities. Built upon the robust Django/Django Rest Framework for APIs, this system is deployed using Docker containerization, ensuring seamless operation and scalability.
