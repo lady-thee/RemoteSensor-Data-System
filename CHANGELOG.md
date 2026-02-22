@@ -1,6 +1,24 @@
 # Change Log for InFlow Progress 
 
 
+## [2026-2-22]
+### Features
+- Added MQTT sensor status verification via main app service API.
+- Implemented optional query parameters `sensor_id` and `mqtt_username` for sensor verification endpoint.
+- Added file logging of MQTT messages per sensor for debugging purposes.
+
+### Updates
+- Updated `verify_sensor_status` endpoint to correctly handle optional parameters and raise a 400 error if neither parameter is provided.
+- Updated Docker setup to ensure MQTT service writes logs to `/app/src/data`.
+- Updated Docker Compose configuration to mount `./data` folder as a volume for MQTT service, allowing logs to be visible on the host system.
+- Improved retry and logging logic in MQTT service for sensor status verification.
+- Cleaned up cache logic for sensor verification in MQTT service to prevent repeated API calls for recently verified sensors.
+
+### Fixes
+- Fixed issue where MQTT service requests were failing with `422 Unprocessable Entity` due to improper handling of optional parameters.
+- Fixed file creation issue inside Docker by ensuring parent directories exist before writing logs.
+- Resolved `DisallowedHost` errors in main app service by correctly adding container hostnames to `ALLOWED_HOSTS`.
+
 ## [2026-2-9]
 ### Features
 - Created a script to simulate sensor behavior to test MQTT conenction with mosquito
