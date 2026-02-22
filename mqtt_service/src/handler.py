@@ -7,10 +7,15 @@ import json
 import asyncio
 from loguru import logger
 import aiomqtt
+import aiofiles
+from datetime import datetime
 from dotenv import load_dotenv
+import pathlib
 
 from src.auth import verify_sensor_status
+from src.schema import SensorStatus
 
+root_dir = pathlib.Path(__file__).resolve().parent
 
 load_dotenv()
 
@@ -72,7 +77,7 @@ async def mqtt_listener():
 
                 print(f"Received: {topic}")
 
-                logger.log("Topic is received")
+                logger.info("Topic is received")
 
                 # Parse topic to extract IDs
                 operator_id, sensor_id, topic_type = parse_topic(topic)
@@ -82,10 +87,10 @@ async def mqtt_listener():
                     continue
                 
                 # Verify messsage/payload before processing
-                is_sensor_active = await verify_sensor_status(sensor_id=sensor_id, mqtt_username=None)
+                is_sensor_active = await verify_sensor_status(sensor_id=sensor_id)
 
-                if not is_sensor_active:
-                    logger.error(f"MQTT_ERROR: Inactive or unknown sensor {sensor_id}. Rejecting message.")
+                if is_sensor_active == SensorStatus.INACTIVE:
+                    logger.error(f"MQTT_ERROR: Inactive sensor {sensor_id}. Rejecting message.")
                     continue
 
                 # Parse payload if sensor is active
@@ -101,8 +106,8 @@ async def mqtt_listener():
                 logger.info(f"Parsed message from Operator: {operator_id}, Sensor: {sensor_id}, Type: {topic_type}, Payload: {payload}")
 
                 # write to file for testing
-                with open("mqtt_messages.log", "a") as f:
-                    f.write(f"{topic} | {json.dumps(payload)}\n")
+                async with aiofiles.open(root_dir / "data" / f"mqtt_messages_{sensor_id}.log", mode="a") as f:
+                    await f.write(f"{datetime.now().isoformat()} | Published to {topic}: {json.dumps(payload)}\n")
                 
                 # Save to influxDB               
     except aiomqtt.MqttError as e:

@@ -4,7 +4,8 @@ WORKDIR /app
 
 COPY . . 
 
-RUN pip install aiomqtt 
+RUN pip install aiomqtt
+RUN pip install aiofiles
 
 CMD ["python", "test_sensor.py"]
 

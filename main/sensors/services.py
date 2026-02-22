@@ -11,9 +11,11 @@ import uuid
 import json
 import hashlib
 import httpx
-import logging
+from loguru import logger
+from asgiref.sync import async_to_sync
 import secrets
 from typing import  List
+from asgiref.sync import async_to_sync
 
 import bcrypt
 from django.contrib.auth import get_user_model
@@ -28,12 +30,10 @@ from config.responses import (
     InternalServerError
 )
 
-
 from sensors.models import Sensor, SensorType, SensorCredentials
 from sensors.schema import (SensorInputSchema, SensorResponseSchema, SensorUpdateSchema)
 
 
-logger = logging.getLogger(__name__)
 User = get_user_model()
 
 
@@ -73,6 +73,25 @@ def generate_mqtt_username(sensor_name: str, sensor_id: uuid.UUID) -> str:
     name_part = sensor_name.strip().upper().replace(" ", "_")[:15]  
     id_part = str(sensor_id).split("-")[0].upper() 
     return f"{name_part}_{id_part}"
+
+
+async def async_request(mqtt_service_url: str, mqtt_payload: dict):
+    """
+    Since DJANGO signals are synchronous, this function is used to make an asynchronous HTTP request to the MQTT service.
+    """
+    try:
+        with httpx.Client() as client:
+            response = client.post(mqtt_service_url, json=mqtt_payload, timeout=10.0)
+            response.raise_for_status()
+            logger.info(f"Successfully synced sensor status to MQTT service.")
+    except httpx.HTTPError as e:
+        logger.error(f"HTTP error syncing sensor status to MQTT service: {e}")
+    except httpx.RequestError as e:
+        logger.error(f"Request error syncing sensor status to MQTT service: {e}")
+    except httpx.TimeoutException as e:
+        logger.error(f"Timeout error syncing sensor status to MQTT service: {e}")
+    except Exception as e:
+        logger.error(f"Unexpected error syncing sensor status to MQTT service: {e}")
 
 
 
@@ -123,17 +142,13 @@ def register_sensor_service(user_id: str, payload: SensorInputSchema) -> SensorR
 
         # Call MQTT service to create credentials
         try:
-            with httpx.AsyncClient() as client:
-                response = client.post(
-                    f"{mqtt_url}/mqtt/create_credentials",
-                    json={
-                        "mqtt_username": mqtt_username,
-                        "mqtt_key": raw_key
-                    },
-                    timeout=10.0
-                )
-                response.raise_for_status()
-                logger.info(f"MQTT credentials created for sensor {sensor.name}")
+            mqtt_service_url = f"{mqtt_url}/mqtt/create_credentials"
+            mqtt_payload = {
+                "mqtt_username": mqtt_username,
+                "mqtt_key": raw_key,
+                "topics": topics
+            }
+            async_to_sync(async_request)(mqtt_service_url=mqtt_service_url, mqtt_payload=mqtt_payload)
         except httpx.HTTPError as e:
             logger.error(f"HTTP error while creating MQTT credentials: {e}")
             raise ConflictError("Failed to create MQTT credentials.")
@@ -223,16 +238,16 @@ def update_sensor_service(id: str, data: SensorUpdateSchema) -> SensorResponseSc
         raise InternalServerError(message=f"Unexpected error fetching user (Error: {e})")
 
 
-def verify_sensor_status_service(sensor_id: str | None = None, mqtt_username: str | None = None) -> bool: 
+def verify_sensor_status_service(sensor_id: str | None = None) -> bool: 
     """
     Verify if sensor is active using sensor ID or MQTT username
     """
     try:
         if sensor_id:
             sensor = Sensor.objects.get(id=sensor_id)
-        elif mqtt_username:
-            credentials = SensorCredentials.objects.get(mqtt_username=mqtt_username)
-            sensor = credentials.sensor
+        # elif mqtt_username:
+        #     credentials = SensorCredentials.objects.get(mqtt_username=mqtt_username)
+        #     sensor = credentials.sensor
         else:
             logger.warning("No sensor_id or mqtt_username provided for status verification")
             return False
@@ -241,7 +256,7 @@ def verify_sensor_status_service(sensor_id: str | None = None, mqtt_username: st
         logger.info(f"Sensor status verification for {sensor.id}: {is_active}")
         return is_active
     except (Sensor.DoesNotExist, SensorCredentials.DoesNotExist):
-        logger.warning(f"Sensor not found for id={sensor_id} or username={mqtt_username}")
+        logger.warning(f"Sensor not found for id={sensor_id} during status verification")
         return False
     except Exception as e:
         logger.exception(f"Unexpected error during sensor status verification: {e}")

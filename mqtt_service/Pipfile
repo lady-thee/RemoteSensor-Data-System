@@ -12,6 +12,7 @@ aiomqtt = "*"
 uvicorn = "*"
 async-lru = "*"
 async-lru-cache = "*"
+aiofiles = "*"
 
 [dev-packages]
 

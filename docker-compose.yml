@@ -51,7 +51,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
     ports:
-      - "5050:80"
+      - "9090:80"
     depends_on: 
       postgresql_db:
         condition: service_healthy
@@ -75,7 +75,7 @@ services:
       - app_network
 
 
-  main_app_service:
+  main-app-service:
     build:
       context: ./main
       dockerfile: Dockerfile
@@ -95,7 +95,7 @@ services:
     networks:
       - app_network
 
-  mqtt_service:
+  mqtt-service:
     build:
       context: ./mqtt_service
       dockerfile: Dockerfile
@@ -120,7 +120,7 @@ services:
     networks:
       - app_network
   
-  sensor_simulator:
+  sensor-simulator:
     build:
       context: ./workshop
       dockerfile: Dockerfile
@@ -129,6 +129,7 @@ services:
     environment:
       MQTT_BROKER: 'mosquitto'
       MQTT_PORT: '1883'
+    restart: unless-stopped
     depends_on:
       - mosquitto
     networks:

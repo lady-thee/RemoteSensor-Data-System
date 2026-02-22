@@ -10,7 +10,7 @@ WORKDIR /app
 
 # Install OS level dependencies
 RUN apt-get update && \
-    apt-get install -y mosquitto-clients && \
+    apt-get install -y mosquitto mosquitto-clients procps && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Pipenv globally

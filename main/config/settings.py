@@ -31,6 +31,7 @@ SECRET_KEY = general_settings.SECRET_KEY
 DEBUG = general_settings.DEBUG
 ALLOWED_HOSTS = general_settings.ALLOWED_HOSTS.split(',')
 ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS if host.strip()]
+print(f"ALLOWED_HOSTS: {ALLOWED_HOSTS}")
 
 MQTT_SERVICE_URL = general_settings.MQTT_SERVICE_URL
 

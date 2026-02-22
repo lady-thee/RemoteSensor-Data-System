@@ -16,7 +16,6 @@ class Sensor(models.Model):
     class SensorStatus(models.TextChoices):
         ACTIVE = "ACTIVE", "Active"
         INACTIVE = "INACTIVE", "Inactive"
-        PENDING = "PENDING", "Pending"
         DELETED = "DELETED", "Deleted"
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -50,7 +49,7 @@ class Sensor(models.Model):
         max_length=20,
         db_index=True,
         choices=SensorStatus.choices,
-        default=SensorStatus.PENDING,
+        default=SensorStatus.ACTIVE,
     )
     
 

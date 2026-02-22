@@ -1,6 +1,7 @@
-from typing import List
+from typing import List, Optional
 from django.contrib.auth import get_user_model
-from ninja import Router
+from ninja import Router, Query
+from ninja.errors import HttpError
 
 from sensors.services import (
     register_sensor_service,
@@ -115,11 +116,22 @@ def update_sensor(request, sensor_id: str, payload: SensorUpdateSchema):
     response={200: bool},
     summary="Verify if sensor is active"
 )
-def verify_sensor_status(request, sensor_id: str = None, mqtt_username: str = None):
+def verify_sensor_status(
+    request, 
+    sensor_id: Optional[str] = Query(default=None, description="ID of the sensor to verify"),
+    # mqtt_username: Optional[str] = Query(default=None, description="MQTT username of the sensor to verify")
+ ):
     """
     Verify if sensor is active
+
     """
-    is_active = verify_sensor_status_service(sensor_id=sensor_id, mqtt_username=mqtt_username)
+    print("QUERY PARAMS:", request.GET)
+    print("sensor_id:", sensor_id)
+    # print("mqtt_username:", mqtt_username)
+    if not sensor_id:
+        raise HttpError(400, "At least one of sensor_id or mqtt_username must be provided for verification.")  
+    
+    is_active = verify_sensor_status_service(sensor_id=sensor_id)
     
     return is_active
 

@@ -22,8 +22,11 @@ down:
 down-all:
 	docker compose down --volumes --remove-orphans
 
-build:
+build-all:
 	docker compose up -d --build 
+
+build:
+	docker compose build
 
 logs:
 	docker compose logs -f 
@@ -34,20 +37,27 @@ restart:
 
 # Django related commands 
 migrations: 
-	docker compose exec main_app_service python manage.py makemigrations 
+	docker compose exec main-app-service python manage.py makemigrations 
 
 migrate:
-	docker compose exec main_app_service python manage.py migrate 
+	docker compose exec main-app-service python manage.py migrate 
 
 superuser:
-	docker compose exec main_app_service python manage.py createsuperuser 
+	docker compose exec main-app-service python manage.py createsuperuser 
 
 shell:
-	docker compose exec main_app_service python manage.py shell 
+	docker compose exec main-app-service python manage.py shell 
 
 bash:
-	docker compose exec main_app_service python manage.py /bin/bash 
+	docker compose exec main-app-service python manage.py /bin/bash 
 
+
+# Python Pipenv commands
+pipenv-shell:
+	docker compose exec main-app-service pipenv shell
+
+install:
+	docker compose exec mqtt-service pipenv install
 
 # PostgreSQL commands
 psql:
